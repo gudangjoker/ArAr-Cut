@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  rust-check:
+    name: Rust Check & Unit Tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: System dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake libclang-dev pkg-config libavcodec-dev libavformat-dev libavutil-dev libavfilter-dev libavdevice-dev libswscale-dev libswresample-dev libasound2-dev
+
+      - name: Install Rust
+        working-directory: src
+        run: rustup toolchain install
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src
+          key: ci-linux
+
+      - name: Clippy & Cargo Check (core + FilmCraft pro modules)
+        working-directory: src
+        run: |
+          cargo check -p concat-core -p concat-project -p concat-effects -p concat-text -p filmcraft-audio-dsp -p filmcraft-color -p filmcraft-scopes
+          cargo test -p concat-core -p concat-project -p filmcraft-audio-dsp -p filmcraft-color -p filmcraft-scopes

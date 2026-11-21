@@ -1,0 +1,20 @@
+[package]
+name = "ararcut-android-bindgen"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+description = "uniffi-bindgen for ararcut-android: generates its Kotlin bindings from the built library (the Android build runs it)."
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+# The release ararcut-android uses (same lock file): bindings only load
+# against their own release.
+uniffi = { version = "=0.32.2", features = ["cli"] }

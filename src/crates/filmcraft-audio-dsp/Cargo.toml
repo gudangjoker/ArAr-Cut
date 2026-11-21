@@ -1,0 +1,10 @@
+[package]
+name = "filmcraft-audio-dsp"
+description = "Real-time audio DSP from FilmCraft: BS.1770 / EBU R128 loudness metering, GCC-PHAT audio sync, and broadcast audio effects"
+version = "0.13.0"
+edition.workspace = true
+license = "MIT OR Apache-2.0"
+rust-version.workspace = true
+
+# Intentionally dependency-free (layer L1): planar `&mut [f32]` slices in, planar slices out.
+[dependencies]

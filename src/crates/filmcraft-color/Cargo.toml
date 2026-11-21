@@ -1,0 +1,10 @@
+[package]
+name = "filmcraft-color"
+description = "Colour science from FilmCraft: camera log curves, gamut matrices, BT.2390 tone mapping, and LUTs"
+version = "0.13.0"
+edition.workspace = true
+license = "MIT OR Apache-2.0"
+rust-version.workspace = true
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
