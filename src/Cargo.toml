@@ -66,6 +66,17 @@ codegen-units = 1
 [profile.dev.package."*"]
 opt-level = 2
 
+# FilmCraft DSP realtime-factor tests and long convolution / spectral runs
+# require opt-level 3 (Cargo's `package."*"` excludes workspace members).
+[profile.dev.package.filmcraft-audio-dsp]
+opt-level = 3
+
+[profile.dev.package.filmcraft-color]
+opt-level = 2
+
+[profile.dev.package.filmcraft-scopes]
+opt-level = 2
+
 # No incremental caches for the everyday check-and-test builds; see
 # .cargo/config.toml for why it is said here and not there.
 [profile.dev]
