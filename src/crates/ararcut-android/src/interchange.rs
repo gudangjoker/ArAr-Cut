@@ -117,6 +117,7 @@ fn media_clips<'a>(timeline: &'a Timeline) -> Vec<&'a Clip> {
     let mut clips: Vec<&Clip> = timeline
         .clips
         .iter()
+        .map(|c| c.as_ref())
         .filter(|c| matches!(c.kind, ClipKind::Video | ClipKind::Image | ClipKind::Audio))
         .collect();
     clips.sort_by(|a, b| a.start.total_cmp(&b.start));
@@ -211,6 +212,7 @@ fn export_premiere_xml(timeline: &Timeline, media: &HashMap<&str, &MediaItem>) -
         let mut tclips: Vec<&Clip> = timeline
             .clips
             .iter()
+            .map(|c| c.as_ref())
             .filter(|c| c.track_id == track.id && matches!(c.kind, ClipKind::Video | ClipKind::Image))
             .collect();
         if tclips.is_empty() {
@@ -254,6 +256,7 @@ fn export_premiere_xml(timeline: &Timeline, media: &HashMap<&str, &MediaItem>) -
         let mut tclips: Vec<&Clip> = timeline
             .clips
             .iter()
+            .map(|c| c.as_ref())
             .filter(|c| c.track_id == track.id && c.kind == ClipKind::Audio)
             .collect();
         if tclips.is_empty() {
@@ -399,6 +402,7 @@ fn export_otio(timeline: &Timeline, media: &HashMap<&str, &MediaItem>) -> (Strin
         let mut tclips: Vec<&Clip> = timeline
             .clips
             .iter()
+            .map(|c| c.as_ref())
             .filter(|c| {
                 c.track_id == track.id
                     && matches!(c.kind, ClipKind::Video | ClipKind::Image | ClipKind::Audio)

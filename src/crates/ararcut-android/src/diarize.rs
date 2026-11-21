@@ -13,8 +13,9 @@
 use std::sync::Arc;
 
 use concat_media::{AudioDecoder, AudioOptions, SampleFormat};
+use concat_project::commands::ClipPatch;
 use concat_project::model::ClipKind;
-use concat_project::{ClipPatch, Command, srt};
+use concat_project::{Command, srt};
 
 use crate::session::{MobileSession, TimelineView};
 use crate::MobileError;
