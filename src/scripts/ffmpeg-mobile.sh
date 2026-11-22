@@ -116,12 +116,13 @@ case "$target" in
     (cd "$build" && "$src/configure" "${common[@]}" \
       --target-os=darwin --arch=arm64 \
       --sysroot="$sysroot" \
+      --host-cc="$(xcrun --sdk macosx -f clang)" \
       --cc="$(xcrun --sdk $sdk -f clang)" \
       --cxx="$(xcrun --sdk $sdk -f clang++)" \
       --ar="$(xcrun --sdk $sdk -f ar)" --nm="$(xcrun --sdk $sdk -f nm)" \
       --ranlib="$(xcrun --sdk $sdk -f ranlib)" --strip="$(xcrun --sdk $sdk -f strip)" \
       --enable-videotoolbox --enable-audiotoolbox \
-      --disable-avfoundation --disable-coreimage \
+      --disable-avfoundation --disable-coreimage --disable-metal \
       --extra-cflags="-arch arm64 $min_flag" \
       --extra-ldflags="-arch arm64 $min_flag")
     ;;
