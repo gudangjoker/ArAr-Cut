@@ -385,9 +385,10 @@ final class EditorStore: ObservableObject {
                 if !mainIds.isEmpty {
                     latestView = try sess.addToMain(mediaIds: mainIds, atUs: at)
                 }
+                let finalView = latestView
                 await MainActor.run {
                     self.isWorking = false
-                    if let v = latestView {
+                    if let v = finalView {
                         self.applyView(v)
                     } else {
                         self.message = "Could not import selected media."
@@ -454,7 +455,7 @@ final class EditorStore: ObservableObject {
         isPlayingNow = false
         playbackTask?.cancel()
         playbackTask = nil
-        pause()
+        ArArCut.pause()
         Task { await refreshFrame(motion: .still) }
     }
 
