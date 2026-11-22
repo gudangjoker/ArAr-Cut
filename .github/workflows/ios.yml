@@ -75,6 +75,7 @@ jobs:
         with:
           workspaces: src
           key: release-ios
+          cache-on-failure: true
 
       - name: Build Rust static library (aarch64-apple-ios)
         working-directory: src
