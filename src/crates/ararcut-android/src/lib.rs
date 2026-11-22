@@ -192,6 +192,12 @@ fn start_logging(dirs: &AppDirs) {
     }
 }
 
+/// Swift-friendly alias for [`init`] (`init` is a reserved keyword in Swift).
+#[uniffi::export]
+pub fn start_engine(files_dir: String, cache_dir: String) -> Result<(), MobileError> {
+    init(files_dir, cache_dir)
+}
+
 /// The engine's version, for the About screen.
 #[uniffi::export]
 pub fn engine_version() -> String {

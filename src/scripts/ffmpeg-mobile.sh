@@ -39,10 +39,17 @@ if [ ! -f "$src/configure" ]; then
   tarball="$work/ffmpeg-$version.tar.xz"
   curl -fsSL --retry 5 --retry-all-errors -o "$tarball" \
     "https://ffmpeg.org/releases/ffmpeg-$version.tar.xz"
+  sha256_check() {
+    if command -v sha256sum >/dev/null 2>&1; then
+      sha256sum "$@"
+    else
+      shasum -a 256 "$@"
+    fi
+  }
   if [ -n "${FFMPEG_SHA256:-}" ]; then
-    echo "$FFMPEG_SHA256  $tarball" | sha256sum -c -
+    echo "$FFMPEG_SHA256  $tarball" | sha256_check -c -
   else
-    echo "FFmpeg tarball SHA-256: $(sha256sum "$tarball" | awk '{print $1}')"
+    echo "FFmpeg tarball SHA-256: $(sha256_check "$tarball" | awk '{print $1}')"
     echo "Tip: pin FFMPEG_SHA256 in CI for strict supply-chain verification."
   fi
   tar -xf "$tarball" -C "$work"

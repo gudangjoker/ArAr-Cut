@@ -557,6 +557,11 @@ impl MobileSession {
         self.add_to_bin(path, summary.to_new_media())
     }
 
+    /// Swift-friendly alias for [`Self::import`] (`import` is a reserved keyword in Swift).
+    pub fn import_media(&self, path: String) -> Result<MediaInfo, MobileError> {
+        self.import(path)
+    }
+
     /// Reads a file and adds only its sound to the bin: a video brought in
     /// for its sound comes in as sound, so a clip of it is a sound clip, not
     /// a video on an audio row. A file with no sound is refused.

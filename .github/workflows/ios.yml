@@ -1,0 +1,148 @@
+# iOS build pipeline: builds an unsigned arm64 iOS .ipa (for AltStore, SideStore,
+# Sideloadly, TrollStore, or re-signing with an Apple Developer certificate) on macos-15.
+#
+# Manual run (Actions › iOS Build › Run workflow) produces an artifact `ararcut-ios-ipa`.
+# Pushing a `v*` tag also attaches `ararcut-ios-<version>.ipa` + `.sha256` to the GitHub Release.
+name: iOS Build
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  GGML_NATIVE: "OFF"
+  IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+
+jobs:
+  ipa:
+    name: iOS IPA (arm64)
+    runs-on: macos-15
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: v
+        name: Resolve version
+        run: |
+          listed="$(sed -n 's/^ararcut\.version=//p' src/crates/ararcut-android/android/gradle.properties)"
+          code="$(sed -n 's/^ararcut\.versionCode=//p' src/crates/ararcut-android/android/gradle.properties)"
+          if [ "$GITHUB_REF_TYPE" = tag ]; then v="${GITHUB_REF_NAME#v}"; else v="$listed"; fi
+          echo "version=$v" >>"$GITHUB_OUTPUT"
+          echo "build_number=${code:-1000099}" >>"$GITHUB_OUTPUT"
+          echo "### ArAr Cut iOS v$v (\`${GITHUB_SHA::9}\`)" >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Install build tools (XcodeGen, cmake)
+        run: brew install xcodegen cmake
+
+      - name: Install Rust & iOS target
+        working-directory: src
+        run: |
+          rustup toolchain install
+          rustup target add aarch64-apple-ios
+
+      - name: FFmpeg for iOS (cached)
+        id: ffmpeg
+        uses: actions/cache/restore@v5
+        with:
+          path: src/vendor/ffmpeg/aarch64-apple-ios
+          key: ffmpeg-aarch64-apple-ios-${{ env.IPHONEOS_DEPLOYMENT_TARGET }}-${{ hashFiles('src/scripts/ffmpeg-mobile.sh') }}
+
+      - name: FFmpeg for iOS
+        if: steps.ffmpeg.outputs.cache-hit != 'true'
+        run: src/scripts/ffmpeg-mobile.sh aarch64-apple-ios
+
+      - name: FFmpeg for iOS (save)
+        if: steps.ffmpeg.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: src/vendor/ffmpeg/aarch64-apple-ios
+          key: ${{ steps.ffmpeg.outputs.cache-primary-key }}
+
+      - name: sherpa-onnx for iOS
+        run: src/scripts/sherpa-mobile.sh aarch64-apple-ios
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src
+          key: release-ios
+
+      - name: Build Rust static library (aarch64-apple-ios)
+        working-directory: src
+        run: |
+          eval "$(scripts/mobile-env.sh aarch64-apple-ios)"
+          cargo build --release --target aarch64-apple-ios -p ararcut-android --lib
+          ls -lh target/aarch64-apple-ios/release/libararcut_android.a
+
+      - name: Generate Swift UniFFI bindings & XCFrameworks
+        working-directory: src
+        run: |
+          IOS_DIR="$GITHUB_WORKSPACE/src/crates/ararcut-android/ios"
+          GEN_DIR="$IOS_DIR/Generated"
+          FW_DIR="$IOS_DIR/Frameworks"
+          HDR_DIR="$RUNNER_TEMP/ararcut-ffi-headers"
+          rm -rf "$GEN_DIR" "$FW_DIR" "$HDR_DIR"
+          mkdir -p "$GEN_DIR" "$FW_DIR" "$HDR_DIR"
+
+          cargo run --release -p ararcut-android-bindgen -- generate \
+            --library target/aarch64-apple-ios/release/libararcut_android.a \
+            --config crates/ararcut-android/uniffi.toml \
+            --language swift \
+            --out-dir "$GEN_DIR"
+
+          ls -la "$GEN_DIR"
+          cp "$GEN_DIR"/*.h "$HDR_DIR/"
+          cp "$GEN_DIR"/*.modulemap "$HDR_DIR/module.modulemap"
+
+          xcodebuild -create-xcframework \
+            -library target/aarch64-apple-ios/release/libararcut_android.a \
+            -headers "$HDR_DIR" \
+            -output "$FW_DIR/ArArCutCoreFFI.xcframework"
+
+          SHERPA_XCFW="$(find vendor/sherpa-onnx/ios -maxdepth 2 -name '*.xcframework' | head -1)"
+          cp -R "$SHERPA_XCFW" "$FW_DIR/SherpaOnnxC.xcframework"
+
+      - name: Generate Xcode project & build unsigned .ipa
+        working-directory: src/crates/ararcut-android/ios
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
+          BUILD_NUMBER: ${{ steps.v.outputs.build_number }}
+        run: |
+          xcodegen generate
+          xcodebuild \
+            -project ArArCut.xcodeproj \
+            -scheme ArArCut \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+          APP_PATH="$RUNNER_TEMP/DerivedData/Build/Products/Release-iphoneos/ArArCut.app"
+          test -d "$APP_PATH"
+
+          mkdir -p "$RUNNER_TEMP/Payload" "$GITHUB_WORKSPACE/dist"
+          cp -R "$APP_PATH" "$RUNNER_TEMP/Payload/ArArCut.app"
+          (cd "$RUNNER_TEMP" && zip -qry "$GITHUB_WORKSPACE/dist/ararcut-ios-$VERSION.ipa" Payload)
+          (cd "$GITHUB_WORKSPACE/dist" && shasum -a 256 "ararcut-ios-$VERSION.ipa" > "ararcut-ios-$VERSION.ipa.sha256")
+          ls -lh "$GITHUB_WORKSPACE/dist"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ararcut-ios-ipa
+          path: dist/*
+          if-no-files-found: error

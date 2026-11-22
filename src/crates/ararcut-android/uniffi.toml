@@ -1,5 +1,9 @@
-# UniFFI bindings of the `ararcut_android` library.
+# UniFFI bindings of the `ararcut_android` library (Android Kotlin & iOS Swift).
 
 [bindings.kotlin]
 package_name = "com.ararcut.app.core"
 cdylib_name = "ararcut_android"
+
+[bindings.swift]
+module_name = "ArArCutCore"
+ffi_module_name = "ArArCutCoreFFI"

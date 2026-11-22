@@ -9,8 +9,8 @@ description = "ArAr Cut on phones: Concat's engine as a native library with Kotl
 
 [lib]
 name = "ararcut_android"
-# cdylib: the library the Android app loads; lib: the host tests
-crate-type = ["cdylib", "lib"]
+# cdylib: Android JNI shared library; staticlib: iOS XCFramework; lib: host tests
+crate-type = ["cdylib", "staticlib", "lib"]
 
 [lints]
 workspace = true

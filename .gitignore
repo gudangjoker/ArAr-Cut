@@ -10,3 +10,6 @@ local.properties
 .gradle/
 .kotlin/
 build/
+src/crates/ararcut-android/ios/Generated/
+src/crates/ararcut-android/ios/Frameworks/
+src/crates/ararcut-android/ios/*.xcodeproj/

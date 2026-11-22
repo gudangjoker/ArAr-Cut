@@ -79,8 +79,11 @@ case "$target" in
   aarch64-apple-ios)
     sherpa=$workspace/vendor/sherpa-onnx/ios/lib
     [ -d "$sherpa" ] || { echo "no sherpa-onnx for $target: run scripts/sherpa-mobile.sh $target" >&2; exit 1; }
+    ios_min="${IPHONEOS_DEPLOYMENT_TARGET:-15.0}"
+    ios_sdk="$(xcrun --sdk iphoneos --show-sdk-path)"
     echo "export SHERPA_ONNX_LIB_DIR='$sherpa'"
-    echo "export IPHONEOS_DEPLOYMENT_TARGET='${IPHONEOS_DEPLOYMENT_TARGET:-15.0}'"
+    echo "export IPHONEOS_DEPLOYMENT_TARGET='$ios_min'"
+    echo "export BINDGEN_EXTRA_CLANG_ARGS_aarch64_apple_ios='--sysroot=$ios_sdk -target arm64-apple-ios$ios_min'"
     ;;
   *)
     echo "unknown target $target" >&2; exit 1 ;;
