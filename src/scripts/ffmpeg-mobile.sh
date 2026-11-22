@@ -112,11 +112,14 @@ case "$target" in
       sdk=iphonesimulator; min_flag="-mios-simulator-version-min=$ios_min"
     fi
     sysroot=$(xcrun --sdk $sdk --show-sdk-path)
+    host_sysroot=$(xcrun --sdk macosx --show-sdk-path)
     echo "Building FFmpeg $version for $target against $sysroot"
-    (cd "$build" && "$src/configure" "${common[@]}" \
+    (cd "$build" && env -u IPHONEOS_DEPLOYMENT_TARGET "$src/configure" "${common[@]}" \
       --target-os=darwin --arch=arm64 \
       --sysroot="$sysroot" \
       --host-cc="$(xcrun --sdk macosx -f clang)" \
+      --host-cflags="-isysroot $host_sysroot" \
+      --host-ldflags="-isysroot $host_sysroot" \
       --cc="$(xcrun --sdk $sdk -f clang)" \
       --cxx="$(xcrun --sdk $sdk -f clang++)" \
       --ar="$(xcrun --sdk $sdk -f ar)" --nm="$(xcrun --sdk $sdk -f nm)" \
@@ -130,6 +133,6 @@ case "$target" in
     echo "unknown target $target" >&2; exit 1 ;;
 esac
 
-make -C "$build" -j"$jobs" install
+env -u IPHONEOS_DEPLOYMENT_TARGET make -C "$build" -j"$jobs" install
 echo "FFmpeg $version for $target is in $out"
 echo "  export FFMPEG_DIR=$out"
