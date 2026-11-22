@@ -44,6 +44,13 @@ targets:
           - "$(SRCROOT)/../../../vendor/ffmpeg/aarch64-apple-ios/lib"
         OTHER_LDFLAGS:
           - "$(inherited)"
+          - "-lavdevice"
+          - "-lavfilter"
+          - "-lavformat"
+          - "-lavcodec"
+          - "-lswresample"
+          - "-lswscale"
+          - "-lavutil"
           - "-lz"
           - "-lbz2"
           - "-liconv"
