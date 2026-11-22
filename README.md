@@ -1,192 +1,169 @@
 <p align="center">
-  <img src="docs/images/ararcut-512.png" alt="ArAr Cut's app icon" width="128">
+  <img src="docs/images/ararcut-512.png" alt="ArAr Cut logo" width="128">
 </p>
 
-<h1 align="center">ArAr Cut for Android</h1>
+<h1 align="center">ArAr Cut</h1>
 
 <p align="center">
-  <b>ArAr Cut is an open-source mobile video editor for Android in Rust + Jetpack Compose.</b><br>
-  Built upon <a href="https://github.com/artcraft-android/capcraft-android">CapCraft for Android</a> and the <a href="https://github.com/jub0t/concat">Concat</a> engine, powered by pro audio DSP, camera log color science, live video scopes, speaker diarization, and desktop NLE interchange from <a href="https://github.com/artcraft-android/filmcraft-android">FilmCraft</a>.
-</p>
-
-<p align="center">
-  <a href="https://github.com/gudangjoker/ArAr-Cut/releases"><img src="https://raw.githubusercontent.com/Kunzisoft/Github-badge/main/get-it-on-github.png" alt="Get it on GitHub" height="60"></a>
-  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/gudangjoker/ArAr-Cut"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="60"></a>
+  <b>Open-source, local-first pro mobile video editor for Android — powered by Rust, wgpu, FFmpeg 8.1, and Jetpack Compose.</b><br>
+  No accounts, no cloud lock-in, no watermarks, no subscriptions.
 </p>
 
 <p align="center">
-  <img alt="Rust engine" src="https://img.shields.io/badge/engine-Rust-lightblue?style=flat&logo=rust&logoColor=white">
-  <img alt="Kotlin and Jetpack Compose" src="https://img.shields.io/badge/UI-Kotlin%20%C2%B7%20Jetpack%20Compose-blue?style=flat">
-  <img alt="Minimum: Android 10 (API 29)" src="https://img.shields.io/badge/min-Android%2010%20%28API%2029%29-blue?style=flat">
-  <img alt="Target: Android 16 (API 36)" src="https://img.shields.io/badge/target-Android%2016%20%28API%2036%29-blue?style=flat">
+  <a href="https://github.com/gudangjoker/ArAr-Cut/releases/latest">
+    <img src="https://raw.githubusercontent.com/Kunzisoft/Github-badge/main/get-it-on-github.png" alt="Get it on GitHub" height="56">
+  </a>
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/gudangjoker/ArAr-Cut">
+    <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="56">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/gudangjoker/ArAr-Cut/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/gudangjoker/ArAr-Cut?style=flat&color=00c8ff"></a>
+  <img alt="Engine: Rust + wgpu" src="https://img.shields.io/badge/engine-Rust%20%C2%B7%20wgpu-lightblue?style=flat&logo=rust&logoColor=white">
+  <img alt="UI: Kotlin Jetpack Compose" src="https://img.shields.io/badge/UI-Kotlin%20%C2%B7%20Jetpack%20Compose-blue?style=flat">
+  <img alt="Android 10+ (API 29-36)" src="https://img.shields.io/badge/Android-10%2B%20(API%2029%E2%80%9336)-3DDC84?style=flat&logo=android&logoColor=white">
+  <img alt="Architecture: arm64-v8a" src="https://img.shields.io/badge/ABI-arm64--v8a%20(16KB%20aligned)-informational?style=flat">
   <img alt="License: AGPL-3.0-or-later" src="https://img.shields.io/badge/license-AGPL--3.0--or--later-blue?style=flat">
-  <img alt="Status: beta" src="https://img.shields.io/badge/status-beta-lightblue?style=flat">
 </p>
 
 <p align="center">
-  <a href="#editing">Editing</a> ·
-  <a href="#filters-effects-and-transitions">Filters, effects &amp; transitions</a> ·
-  <a href="#text-and-stickers">Text &amp; stickers</a> ·
-  <a href="#captions-and-sound">Captions &amp; sound</a> ·
-  <a href="#export-and-home">Export &amp; Home</a> ·
-  <a href="#planned-features">Planned features</a> ·
-  <a href="#building-instructions">Building</a>
+  <a href="#highlights">Highlights</a> ·
+  <a href="#pro-engine-features">Pro Engine</a> ·
+  <a href="#installation--verification">Installation</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#building">Building</a> ·
+  <a href="#platform-roadmap">Roadmap</a> ·
+  <a href="#license--credits">License</a>
 </p>
 
-<br>
+---
 
-<p align="center">
-  <img src="docs/images/editor.png" alt="The editor: a moving gradient test clip with the title Made with CapCraft on a pink plate and a yellow WOW sticker, the transport row, and the timeline with the main track, a sticker row, a Rainbow effect row and Add audio, over the tools Edit, Audio, Text, Effects, Overlay, Captions, Filters, Adjust and Stickers" width="250">
-  <br>
-  <sub>The editor: the preview, the transport row, a timeline with rows for text, stickers, effects and sound, and the tools.</sub>
-</p>
+## Highlights
 
-<br>
+ArAr Cut combines the fast mobile timeline UX and 201-shader GPU compositor of [CapCraft / Concat](https://github.com/artcraft-android/capcraft-android) with pure-Rust broadcast audio DSP, cinema color science, real-time video scopes, speaker diarization, and desktop NLE interchange from [FilmCraft](https://github.com/artcraft-android/filmcraft-android).
 
-## Editing
+- **100% On-Device & Offline** — All decoding, GPU compositing, audio mastering, color grading, captioning, and export run locally on your device. Zero telemetry, zero cloud uploads.
+- **Hardware-Accelerated Engine** — Rust native core (`libararcut_android.so`) with `wgpu` Vulkan GPU rendering (201 WGSL shaders) and FFmpeg 8.1 + Android `AMediaCodec` hardware decode/encode.
+- **Adaptive Portrait & Landscape UI** — Full vertical phone workflow plus an automatic two-pane **Sideways Landscape** studio layout on wide screens, tablets, and foldables (`≥ 600 dp`).
+- **Android 15/16 Ready** — 16 KB ELF page alignment, `targetSdk 36`, foreground export timeout handling, and adaptive/monochrome launcher icons.
 
-<table align="center">
-<tr>
-<td align="center"><img src="docs/images/clip-tools.png" alt="A clip selected on the main track with its trim handles and length, and the clip tools: Split, Volume, Animations, Effects, Delete, Speed, Beats and Crop" width="250"></td>
-<td align="center"><img src="docs/images/sounds.png" alt="The Sound FX panel: a search field, the kinds Swooshes, Pops, Bells, Booms, Game, Cartoon and Transition, and the sounds Whoosh, Swoosh down, Whip, Riser, Fall and Pop, each with its length and an add button" width="250"></td>
-</tr>
-<tr>
-<td align="center"><sub>A clip selected: split, volume, animations, speed, crop and more</sub></td>
-<td align="center"><sub>Sound effects, made by the app</sub></td>
-</tr>
-</table>
+---
 
-<br>
+## Feature Matrix
 
-## Filters, effects and transitions
-
-<table align="center">
-<tr>
-<td align="center"><img src="docs/images/filters.png" alt="The Filters panel on the Cinematic shelf: None, Teal &amp; Orange, Moody (chosen) and Cool Blue, each a preview of the clip itself, and an intensity slider with Apply to all" width="250"></td>
-<td align="center"><img src="docs/images/effects.png" alt="The Video effects panel: the shelves Motion, Light, Distort, Retro, Stylize, Split and Blur, and the effects Shake, Flash, Pulse, Glitch, VHS, Old Film and Rainbow, each previewed on the frame" width="250"></td>
-</tr>
-<tr>
-<td align="center"><sub>80+ filters, previewed on the clip</sub></td>
-<td align="center"><sub>Video effects, on a clip or on a row of their own</sub></td>
-</tr>
-</table>
-
-<p align="center">
-  <img src="docs/images/transitions.png" alt="The Transitions panel at a cut: None, Dissolve, Blur Dissolve, Film Burn, Zoom, Slide, Push, Spin, Swirl, Glitch, RGB Split, Linear Wipe, Iris, Shape Wipe, Light Leak and Cube, every tile animating with the two clips" width="250">
-  <br>
-  <sub>Transitions, every tile animated with your own clips.</sub>
-</p>
-
-<br>
-
-## Text and stickers
-
-<table align="center">
-<tr>
-<td align="center"><img src="docs/images/text.png" alt="The text sheet for Made with CapCraft: the Templates, Fonts, Styles, Effects, Animations and Bubbles tabs, and templates such as BIG NEWS, Weekend, SALE, Day One, WOW!, ROAD TRIP, Cheers, LIVE, TOP 5, Sunday, Oh no!, Ready?, vibes, Chapter 1 and THE END" width="250"></td>
-<td align="center"><img src="docs/images/stickers.png" alt="The Stickers panel on its Labels shelf: NEW, SALE, LIVE, WOW, OMG, LOL, HOT and TOP 10, with the WOW label placed on the preview" width="250"></td>
-</tr>
-<tr>
-<td align="center"><sub>Text: templates, fonts, styles, word art, animations and bubbles</sub></td>
-<td align="center"><sub>Stickers, labels and doodles, drawn by the app</sub></td>
-</tr>
-</table>
-
-<br>
-
-## Captions and sound
-
-<p align="center">
-  <img src="docs/images/captions.png" alt="Captions made on the phone from a speech test clip: The quick brown fox jumps over on a black plate, a row of caption clips on the timeline, and the tools Enter captions, Auto Captions, Caption templates, Auto lyrics and Import captions" width="250">
-  <br>
-  <sub>Captions, made on the phone from what is said.</sub>
-</p>
-
-<br>
-
-## Export and Home
-
-<table align="center">
-<tr>
-<td align="center"><img src="docs/images/export.png" alt="The export settings: Video, GIF and Photo tabs, and sliders for resolution (480p to 4k, set at 1080p), frame rate (24 to 60, set at 30) and bitrate, with the estimated file size" width="250"></td>
-<td align="center"><img src="docs/images/home.png" alt="Home: New video and Edit photo, a row of recent projects, and the tools AutoCut, Retouch, Photo tools, Shoot and record, Auto enhance, Cover maker, Auto captions, Remove background, Adjust speed and Audio tools" width="250"></td>
-</tr>
-<tr>
-<td align="center"><sub>Export at 480p to 4K, 24 to 60 fps, or as a GIF or photo</sub></td>
-<td align="center"><sub>Home: start a video or a photo, then your projects</sub></td>
-</tr>
-</table>
-
-<br>
-
-## Planned features
-
-CapCraft for Android is in beta.
-
-| Area | Status |
+### Core Video & Timeline Editing
+| Category | Capabilities |
 |---|---|
-| Projects from the phone's videos and photos, or shared to the app; autosave; rename, duplicate, delete | ✅ |
-| The timeline: trim, move, split, delete, duplicate, replace, multi-select, undo and redo; pinch to zoom | ✅ |
-| Speed and curves, freeze frame, reverse, volume and fades, crop, mask, chroma key, keyframes | ✅ |
-| Overlays and layers with blend modes, opacity, transform and animations | ✅ |
-| Filters, adjustments (HSL, curves, colour wheels), video effects, body effects and transitions | ✅ |
-| Text: templates, fonts, styles, word art, bubbles, animations and text to speech | ✅ |
-| Stickers, labels, shapes and drawing | ✅ |
-| Captions made on the phone, typed captions, caption templates and imported subtitles | ✅ |
-| Sound effects, voiceover, extract audio, voice effects, noise reduction and isolate voice | ✅ |
-| Remove background (a model downloaded once, run on the phone) | ✅ |
-| Aspect ratios, backgrounds, cover, AutoCut, collage | ✅ |
-| Export at 480p to 4K, 24 to 60 fps, GIF and photo, saved to the gallery and shared | ✅ |
-| Pro Audio DSP: EBU R128 loudness meter, 6 mastering/restoration chains, GCC-PHAT auto audio sync (`filmcraft-audio-dsp`) | ✅ |
-| Pro Color & Scopes: 12 Camera Log → Rec.709 GPU LUTs (`filmcraft-color`) & live Waveform/Parade/Vectorscope/Histogram HUD (`filmcraft-scopes`) | ✅ |
-| Speaker diarization on captions (on-device MFCC clustering, no model download) | ✅ |
-| Desktop NLE interchange export: Premiere Pro XML (`xmeml`), FCPXML 1.11, OpenTimelineIO (`.otio`), CMX 3600 EDL | ✅ |
-| Adaptive Portrait & Landscape (Sideways) editor layout | ✅ |
-| A music library, downloadable effects and templates | ⬜ |
-| Generative AI, cloud storage, accounts | 🚫 ArAr Cut is a local app |
+| **Timeline** | Multi-track timeline (video, overlays, audio, text, stickers, effects), trim, split, ripple/move, duplicate, replace, multi-select, pinch-to-zoom, unlimited undo/redo, autosave |
+| **Transform & Motion** | Keyframes, speed ramps & curves, freeze frame, reverse clip, crop, auto-reframe, masks, chroma key, blend modes, motion blur, stabilization |
+| **Looks & VFX** | 80+ GPU filters, HSL/curves/color wheels adjustments, video & body effects, animated transitions, relight & retouch |
+| **Text & Graphics** | Title templates, fonts, word art, bubbles, text animations, stickers, shapes, freehand drawing, collage & cover editor |
+| **Captions & Speech** | On-device speech-to-text auto captions (Whisper / sherpa-onnx), SRT import, caption templates, voiceover recording, text-to-speech, voice isolation & noise reduction |
+| **Export** | Hardware MP4 export from 480p up to **4K** (24–60 fps) with bitrate/size estimator, animated GIF, and high-res still photo |
 
-<sub>✅ works today · 🚧 in progress · ⬜ not started · 🚫 not planned</sub>
+### Pro Engine Features
+Powered by vendored pure-Rust modules from FilmCraft:
 
-<br>
+- **Pro Audio DSP (`filmcraft-audio-dsp`)**
+  - **EBU R128 / ITU-R BS.1770-4 Loudness Meter** — Integrated LUFS, Short-Term Max, Loudness Range (LU), and 4× oversampled True Peak (dBTP).
+  - **6 Mastering & Restoration Chains** — *Social Punch (-14 LUFS)*, *Broadcast Voice (-16 LUFS)*, *Cinema Master (-23 LUFS)*, *Dialogue Cleanup*, *De-Ess & Warmth*, and *De-Reverb / Room Rescue*, with selectable LUFS targets and one-tap non-destructive Revert.
+  - **GCC-PHAT Sample-Accurate Audio Sync** — Automatically aligns overlay/secondary audio clips to the main track with confidence scoring.
+- **Cinema Color Science (`filmcraft-color`)**
+  - **12 Camera Log → Rec.709 GPU LUTs** — Sony S-Log3, S-Log2, ARRI LogC3, LogC4, RED Log3G10, Canon Log 2 & 3, Panasonic V-Log, Fujifilm F-Log & F-Log2, Apple Log, and DJI D-Log.
+  - Bakes a 33³ `.cube` 3D LUT with BT.2390 highlight roll-off and ACES gamut compression directly into the `wgpu` GPU shader pipeline for 60 fps playback.
+- **Live Video Scopes HUD (`filmcraft-scopes`)**
+  - Floating real-time overlay over the preview monitor: **RGB Waveform**, **Luma Waveform (Y)**, **RGB Parade**, **YUV Vectorscope**, and **Histogram**.
+- **On-Device Speaker Diarization**
+  - Classical MFCC + agglomerative voice clustering (zero neural model downloads) that automatically labels caption clips (`Speaker 1:`, `Speaker 2:`, …) in a single undo step.
+- **Desktop NLE Interchange Export**
+  - Continue editing on desktop NLEs with one-tap timeline export to:
+    - **Premiere Pro / DaVinci Resolve XML** (`xmeml` v5 `.xml`)
+    - **Final Cut Pro / Resolve** (`FCPXML` v1.11 `.fcpxml`)
+    - **OpenTimelineIO** (`.otio`)
+    - **CMX 3600 EDL** (`.edl`)
 
-## Building Instructions
-*Recommended: build via GitHub Actions (`Actions › Release › Run workflow`). One Gradle command builds the app: it compiles the Rust engine with [cargo-ndk](https://github.com/bbqsrc/cargo-ndk) and generates the Kotlin bindings. FFmpeg and sherpa-onnx are fetched and built first, once.*
+---
 
-* Clone this repository
-* Make sure you have at least 10 GB of free disk space
-* In `src`, with `ANDROID_HOME` pointing at your Android SDK:
-  ```
+## Installation & Verification
+
+1. Download **`ararcut-android-1.0.0.apk`** (arm64-v8a) from the [GitHub Releases](https://github.com/gudangjoker/ArAr-Cut/releases/latest) page.
+2. Optionally verify the file checksum against `ararcut-android-1.0.0.apk.sha256` and confirm the APK signing certificate:
+
+```text
+Package ID:  com.ararcut.app
+Min Android: Android 10 (API 29)
+ABI:         arm64-v8a
+Cert SHA-256: 34:00:68:48:30:A6:DB:D3:78:B0:2B:9E:08:70:48:B5:2E:98:1F:53:08:53:8B:6F:30:A1:42:7D:DF:9B:BC:FB
+```
+
+3. You can also track automatic updates directly via **[Obtainium](https://github.com/ImranR98/Obtainium)** using this repository URL.
+
+---
+
+## Architecture
+
+```text
+src/
+├── crates/
+│   ├── ararcut-android/       # UniFFI bridge + Pro Audio/Color/Diarize/NLE + Jetpack Compose Android app
+│   ├── concat-core/           # Core timeline math & types
+│   ├── concat-project/        # Project document model, commands & undo history
+│   ├── concat-media/          # FFmpeg 8.1 decode & AMediaCodec integration
+│   ├── concat-render/         # wgpu Vulkan compositor + 201 WGSL shaders
+│   ├── concat-export/         # Hardware-accelerated muxing & encoding
+│   ├── concat-effects/        # Effect, filter, LUT & transition catalog
+│   ├── concat-text/           # Typography, captions & layout engine
+│   ├── concat-speech/         # On-device Whisper / sherpa-onnx speech & TTS
+│   ├── concat-vision/         # ONNX Runtime background removal & tracking
+│   ├── concat-host/           # Session orchestration, playback & caching
+│   ├── filmcraft-audio-dsp/   # EBU R128, 30+ DSP processors, GCC-PHAT sync
+│   ├── filmcraft-color/       # Camera Log curves, ACES gamut, BT.2390, 3D LUT baker
+│   └── filmcraft-scopes/      # Waveform, Parade, Vectorscope & Histogram rasterizers
+└── scripts/                   # Reproducible FFmpeg & sherpa-onnx mobile build scripts
+```
+
+---
+
+## Building
+
+### GitHub Actions (Recommended)
+All official builds and CI checks run reproducibly via GitHub Actions:
+- **Unit Tests & Rust Check**: [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push/PR to `main`.
+- **Android APK Build**: [`.github/workflows/release.yml`](.github/workflows/release.yml) builds `arm64-v8a` APKs on `v*` tags (signed via repository secrets `ARARCUT_KEYSTORE_BASE64`, `ARARCUT_KEYSTORE_PASSWORD`, `ARARCUT_KEY_ALIAS`, `ARARCUT_KEY_PASSWORD`) or manual dry-run (`Actions › Release › Run workflow`).
+
+### Local CLI Build
+<details>
+  <summary>Requirements & commands</summary>
+
+  - Linux or macOS (WSL on Windows), ≥ 10 GB free disk space
+  - `rustup` (toolchain pinned in `src/rust-toolchain.toml`) + `rustup target add aarch64-linux-android`
+  - `cargo-ndk` `4.1.2` (`cargo install cargo-ndk --version 4.1.2 --locked`)
+  - Android SDK (API 37) + NDK `29.0.14206865`, JDK 17–21, `cmake`, `make`, `clang` / `libclang-dev`, `curl`
+
+  ```bash
+  cd src
   scripts/ffmpeg-mobile.sh aarch64-linux-android
   scripts/sherpa-mobile.sh aarch64-linux-android
   eval "$(scripts/mobile-env.sh aarch64-linux-android)"
-  ```
-* then enter `src/crates/ararcut-android/android` and run `./gradlew assembleRelease`.
-
-Build time dependencies:
-
-<details>
-  <summary>required tools</summary>
-
-  ```
-      Linux or macOS (on Windows, WSL)
-      rustup (it installs the Rust release rust-toolchain.toml names)
-      rustup target add aarch64-linux-android
-      cargo install cargo-ndk --version 4.1.2 --locked
-      Android SDK (API 37) and NDK 29.0.14206865
-      JDK 17 or newer
-      cmake, make, clang (libclang-dev), curl
+  cd crates/ararcut-android/android
+  ./gradlew assembleRelease -Pararcut.abis=arm64-v8a
   ```
 </details>
 
-<br>
+---
 
-## License
+## Platform Roadmap
 
-[AGPL-3.0-or-later](LICENSE) (includes MIT OR Apache-2.0 engine modules from FilmCraft; see [NOTICE](NOTICE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)). ArAr Cut is not affiliated with, endorsed by or connected to ByteDance, CapCut, or Adobe.
+- **Android (`arm64-v8a`)**: Stable release (`v1.0.0`).
+- **macOS (Apple Silicon & Intel)**: Planned. The entire Rust engine (`concat-*` + `filmcraft-*`) already supports macOS natively (Metal via `wgpu`, VideoToolbox via FFmpeg, CoreML via ONNX Runtime, and CoreAudio). Future work adds a native SwiftUI shell via UniFFI Swift bindings (or Slint desktop UI) built via GitHub Actions `macos` runners. In the meantime, use **Export to Desktop NLE** (`.fcpxml`, `.xml`, `.otio`, `.edl`) to round-trip projects directly into Final Cut Pro, DaVinci Resolve, or Premiere Pro on macOS.
 
-<br>
+---
 
-## Misc info for myself
+## License & Credits
 
-Try to use [semantic commit](https://kapeli.com/cheat_sheets/Semantic_Commits.docset/Contents/Resources/Documents/index)
-messages. Use `feat:` / `fix:` / `chore:` / `docs:` / etc.
+- **ArAr Cut** is free and open-source software licensed under **[AGPL-3.0-or-later](LICENSE)**.
+- Built on **[CapCraft for Android](https://github.com/artcraft-android/capcraft-android)** and **[Concat](https://github.com/jub0t/concat)** (`AGPL-3.0-or-later`).
+- Includes pure-Rust audio DSP, color science, video scopes, and diarization algorithms from **[FilmCraft](https://github.com/artcraft-android/filmcraft-android)** (`MIT OR Apache-2.0`).
+- Full third-party attributions and licenses are listed in [NOTICE](NOTICE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- ArAr Cut is an independent open-source project and is not affiliated with or endorsed by ByteDance, CapCut, Apple, or Adobe.

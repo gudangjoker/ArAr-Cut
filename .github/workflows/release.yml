@@ -132,6 +132,7 @@ jobs:
           ./gradlew assembleRelease "-Pararcut.abis=arm64-v8a" "-Pararcut.version=$VERSION" --no-daemon
           mkdir -p "$GITHUB_WORKSPACE/dist"
           cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/dist/ararcut-android-$VERSION.apk"
+          (cd "$GITHUB_WORKSPACE/dist" && sha256sum "ararcut-android-$VERSION.apk" > "ararcut-android-$VERSION.apk.sha256")
 
       - name: APK
         run: |
